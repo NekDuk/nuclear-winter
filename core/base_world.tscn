@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c51i0137vj7bv"]
+
+[ext_resource type="PackedScene" uid="uid://4uag5vqrvp45" path="res://entities/player/player.tscn" id="1_ufccg"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ufccg"]
+
+[node name="BaseWorld" type="Node3D" unique_id=525816558]
+
+[node name="CharacterBody3D" parent="." unique_id=1561415968 instance=ExtResource("1_ufccg")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1661866511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.0584235, 0)
+mesh = SubResource("PlaneMesh_ufccg")
