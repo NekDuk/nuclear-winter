@@ -4,16 +4,25 @@ class_name PlayerController
 enum MoveState {WALK, JOG, SPRINT, CROUCH, AIM}
 #@export var _move_state: MoveState = MoveState.WALK
 
-@onready var player := get_parent() as CharacterBody3D
-@onready var manager := get_parent() as PlayerManager
-@onready var cam_controller: CameraController = $"../CameraPivot"
+@onready var _player := get_parent() as CharacterBody3D
+#@onready var _manager := get_parent() as PlayerManager
+@onready var _cam_controller:= $"../CameraPivot" as CameraController
 
 var _movement_scale: float = 1.0
-@export var _base_speed: float = 10.0
-@export var _stop_speed: float = 10.0
+@export var _strafe_scale := 0.5
+@export var _base_speed := 10.0
+@export var _stop_speed := 10.0
 
-var aiming: bool = false
-var turning: bool = false
+var _aiming: bool = false
+var _turning: bool = false
+
+func start_aim(target_pos: Vector3) -> void:
+	#dot math to look
+	_aiming = true
+
+func stop_aim() -> void:
+	_aiming = false
+
 
 func _physics_process(delta: float) -> void:
 	var speed = _base_speed * _movement_scale
@@ -22,14 +31,14 @@ func _physics_process(delta: float) -> void:
 		Input.get_axis("move_back", "move_forward"))
 
 	if input_dir:
-		var raw_dir: Vector3 = (
-			-cam_controller.player_basis.z * input_dir.y) + (
-			cam_controller.player_basis.x * input_dir.x)
+		var forward_dir := Vector3(-_cam_controller.player_basis.z * input_dir.y).normalized()
+		var right_dir := Vector3(_cam_controller.player_basis.x * input_dir.x).normalized()
 		
-		var move_dir := Vector3(raw_dir.x, 0, raw_dir.z).normalized()
-
-		player.velocity = move_dir * speed
+		var forward_velocity = forward_dir * speed
+		var right_velocity = right_dir * speed * _strafe_scale
+		
+		_player.velocity = forward_velocity + right_velocity
 	else:
-		player.velocity = player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
+		_player.velocity = _player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
 	
-	player.move_and_slide()
+	_player.move_and_slide()

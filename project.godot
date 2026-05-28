@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 
 [debug]
 
-gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
 
 [display]

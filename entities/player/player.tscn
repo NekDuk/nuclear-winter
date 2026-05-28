@@ -30,12 +30,11 @@ mesh = SubResource("CapsuleMesh_abrql")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39105618, -0.2)
 mesh = SubResource("BoxMesh_abrql")
 
-[node name="CameraPivot" type="Node3D" parent="." unique_id=814934241 node_paths=PackedStringArray("test")]
+[node name="CameraPivot" type="Node3D" parent="." unique_id=814934241]
 script = ExtResource("3_sglur")
 _mouse_sensitivity = 0.003
 _zoom_step = 1.0
 _zoom_speed = 30.0
-test = NodePath("../MeshInstance3D")
 
 [node name="Camera" type="Camera3D" parent="CameraPivot" unique_id=1825736268]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 3)
