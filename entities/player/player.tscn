@@ -2,10 +2,13 @@
 
 [ext_resource type="Script" uid="uid://c2gw1mji52roj" path="res://entities/player/player_manager.gd" id="1_abrql"]
 [ext_resource type="Script" uid="uid://qs5yay38bpj1" path="res://entities/player/player_controller.gd" id="2_sglur"]
+[ext_resource type="Script" uid="uid://ck76jk753i5ko" path="res://entities/player/camera_controller.gd" id="3_sglur"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sfv1e"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_abrql"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_abrql"]
 
 [node name="Player" type="CharacterBody3D" unique_id=1561415968]
 script = ExtResource("1_abrql")
@@ -15,15 +18,21 @@ shape = SubResource("CapsuleShape3D_sfv1e")
 
 [node name="Controller" type="Node3D" parent="." unique_id=1453239750]
 script = ExtResource("2_sglur")
-_move_state = null
-_base_speed = null
-_turn_speed = null
-_look_angle = null
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=740095097]
 mesh = SubResource("CapsuleMesh_abrql")
 
-[node name="CameraPivot" type="Node3D" parent="." unique_id=814934241]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Mesh" unique_id=1441188131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39105618, -0.2)
+mesh = SubResource("BoxMesh_abrql")
 
-[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=1825736268]
-transform = Transform3D(1, 0, 0, 0, 0.81915206, 0.57357645, 0, -0.57357645, 0.81915206, 0, 2.761483, 2.2556713)
+[node name="CameraPivot" type="Node3D" parent="." unique_id=814934241]
+script = ExtResource("3_sglur")
+_mouse_sensitivity = 0.003
+_zoom_step = 1.0
+_zoom_speed = 30.0
+
+[node name="Camera" type="Camera3D" parent="CameraPivot" unique_id=1825736268]
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, 0, 6.5326953, 3.2109256)
+projection = 1
+size = 7.0
