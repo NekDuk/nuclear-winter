@@ -1,10 +1,11 @@
 extends Node3D
-
+   
 @onready var _camera: Camera3D = $Camera 
 @export var _mouse_sensitivity: float = .001 
 @export var _smooth_speed: float = 10.0
 var _yaw: float = 0.0
 @export var _pitch: float = -60.0
+var player_basis: Basis = Basis()
 
 @export_group("Zoom Settings")
 @export var _min_size: float = 3.0
@@ -37,6 +38,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	# rotation
+	
 	var current_rot: Quaternion = global_basis.get_rotation_quaternion()
 	var target_rot: Quaternion = Quaternion.from_euler(Vector3(_pitch, _yaw, 0))
 	var blended_rot: Quaternion = current_rot.slerp(target_rot, _smooth_speed * delta)
