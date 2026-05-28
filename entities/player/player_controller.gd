@@ -30,15 +30,16 @@ func _physics_process(delta: float) -> void:
 		Input.get_axis("move_left", "move_right"), 
 		Input.get_axis("move_back", "move_forward"))
 
+	"""
 	if input_dir:
 		var forward_dir := Vector3(-_cam_controller.player_basis.z * input_dir.y).normalized()
 		var right_dir := Vector3(_cam_controller.player_basis.x * input_dir.x).normalized()
 		
-		var forward_velocity = forward_dir * speed
-		var right_velocity = right_dir * speed * _strafe_scale
+		
 		
 		_player.velocity = forward_velocity + right_velocity
 	else:
 		_player.velocity = _player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
 	
 	_player.move_and_slide()
+	"""
