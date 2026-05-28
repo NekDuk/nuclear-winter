@@ -1,18 +1,20 @@
 extends Node3D
-   
-@onready var _camera: Camera3D = $Camera 
-@export var _mouse_sensitivity: float = .001 
-@export var _smooth_speed: float = 10.0
-var _yaw: float = 0.0
-@export var _pitch: float = -60.0
-var player_basis: Basis = Basis()
+class_name CameraController
+
+@onready var _camera := $Camera 
+@export var _mouse_sensitivity := .001 
+@export var _smooth_speed := 10.0
+var _yaw := 0.0
+@export var _pitch := -60.0
+var player_basis := Basis()
 
 @export_group("Zoom Settings")
-@export var _min_size: float = 3.0
-@export var _max_size: float = 20.0
-@export var _zoom_step: float = 1.5
-@export var _zoom_speed: float = 10.0 # interpolation speed
-var _target_size: float = 7.0
+@export var _min_size := 3.0
+@export var _max_size := 20.0
+@export var _zoom_step := 1.5
+@export var _zoom_speed := 10.0 # interpolation speed
+
+var _target_size:= 7.0
 
 func _ready() -> void:
 	_target_size = _camera.size
@@ -30,6 +32,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if event is InputEventMouseMotion:
 		if Input.is_action_pressed("camera_rotate"):
+			
 			_yaw += event.relative.x * _mouse_sensitivity
 	
 	if Input.is_action_just_released("camera_rotate"):
@@ -38,13 +41,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	# rotation
-	
 	var current_rot: Quaternion = global_basis.get_rotation_quaternion()
-	var target_rot: Quaternion = Quaternion.from_euler(Vector3(_pitch, _yaw, 0))
+	var target_rot: Quaternion = Quaternion.from_euler(Vector3(0, _yaw, 0))
 	var blended_rot: Quaternion = current_rot.slerp(target_rot, _smooth_speed * delta)
 	
+	_camera.rotation_degrees = Vector3(_pitch, 0, 0)
 	global_basis = Basis(blended_rot)
 	
 	# zoom
 	if not is_equal_approx(_camera.size, _target_size):
 		_camera.size = move_toward(_camera.size, _target_size, _zoom_speed * delta)
+		
+	update_movement_vectors()	
+		
+func update_movement_vectors() -> void:
+	# snap angles to axis
+	var current_degrees = wrapf(rad_to_deg(_yaw), 0, 360)
+	var snapped_degrees = floorf(current_degrees / 90) * 90
+	var forward_angle := Quaternion.from_euler(Vector3(0, deg_to_rad(snapped_degrees), 0))
+	player_basis = Basis(forward_angle)
