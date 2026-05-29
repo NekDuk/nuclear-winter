@@ -54,16 +54,18 @@ func _physics_process(delta: float) -> void:
 		if _aiming:
 			turn_towards_target(delta)
 			
-			var dot = -_player.basis.z.dot(move_dir.normalized())
-			var forward_vel = forward_dir * speed
-			var right_vel = right_dir * speed
+			var move_dir_norm = move_dir.normalized()
+			var raw_velocity = move_dir_norm * speed
 			
+			var dot = -_player.basis.z.dot(move_dir_norm)
+			
+			var penalty := 1.0
 			if dot < _forward_cutoff and dot > -_forward_cutoff:
-				right_vel *= _strafe_penalty
+				penalty = _strafe_penalty
 			elif dot < -_forward_cutoff:
-				forward_vel *= _back_penalty
-				
-			_player.velocity = forward_vel + right_vel
+				penalty = _back_penalty
+			
+			_player.velocity = raw_velocity * penalty
 		else:
 			_target_position = _player.global_position + move_dir
 			turn_towards_target(delta)
@@ -75,7 +77,6 @@ func _physics_process(delta: float) -> void:
 	else:
 		if _aiming:
 			turn_towards_target(delta)
-		# Added * delta here to fix frame-rate independence
 		_player.velocity = _player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
 	
 	_player.move_and_slide()
