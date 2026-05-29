@@ -2,16 +2,25 @@
 
 [ext_resource type="PackedScene" uid="uid://4uag5vqrvp45" path="res://entities/player/player.tscn" id="1_ufccg"]
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_ufccg"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_ufccg"]
+size = Vector3(9.982605, 1, 9.887756)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ufccg"]
 
 [node name="BaseWorld" type="Node3D" unique_id=525816558]
 
 [node name="CharacterBody3D" parent="." unique_id=1561415968 instance=ExtResource("1_ufccg")]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1661866511]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3825115, 0)
-mesh = SubResource("PlaneMesh_ufccg")
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1751660000]
 transform = Transform3D(0.55496055, 0.46445706, -0.6901437, 0, 0.8296227, 0.55832446, 0.83187664, -0.30984804, 0.46040785, 2.8045166, 0, 0)
 light_energy = 0.7
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=731147028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.955489, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1367942195]
+shape = SubResource("BoxShape3D_ufccg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=1713286693]
+transform = Transform3D(10, 0, 0, 0, 0.1, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("BoxMesh_ufccg")

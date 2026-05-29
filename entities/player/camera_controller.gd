@@ -14,7 +14,6 @@ var player_basis := Basis()
 @export var _max_size := 20.0
 @export var _zoom_step := 1.5
 @export var _zoom_speed := 10.0 # interpolation speed
-const RAY_LENGTH: float = 100.0
 
 var _target_size:= 7.0
 var _offset: Vector3
@@ -32,14 +31,13 @@ func _snap_angle(current_yaw_radians: float, snap_angle_degrees: float) -> float
 func _get_mouse_real_world() -> Vector3:
 	var mouse_pos = get_viewport().get_mouse_position()
 
-	var from = _camera.project_ray_origin(mouse_pos)
-	var to = from + _camera.project_ray_normal(mouse_pos) * RAY_LENGTH	
-	var space_state = get_world_3d().direct_space_state
-	var query = PhysicsRayQueryParameters3D.create(from, to)
-	var result = space_state.intersect_ray(query)
+	var ray_origin = _camera.project_ray_origin(mouse_pos)
+	var ray_dir = _camera.project_ray_normal(mouse_pos)
+	var floor_plane = Plane(Vector3.UP, _controller.global_position.y)
+	var intersection = floor_plane.intersects_ray(ray_origin, ray_dir)
 
-	if result:
-		return result.position
+	if intersection:
+		return intersection
 
 	push_warning("Mouse hit no object, cant get real world space")
 	return Vector3.ZERO

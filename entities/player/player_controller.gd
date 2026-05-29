@@ -2,11 +2,9 @@ extends Node
 class_name PlayerController
 
 enum MoveState {WALK, JOG, SPRINT, CROUCH, AIM}
-#@export var _move_state: MoveState = MoveState.WALK
 
 @onready var _player := get_parent() as CharacterBody3D
-#@onready var _manager := get_parent() as PlayerManager
-@onready var _cam_controller:= $"../CameraPivot" as CameraController
+@onready var _cam_controller := $"../CameraPivot" as CameraController
 
 var _movement_scale: float = 1.0
 @export var _strafe_penalty := 0.5
@@ -14,13 +12,13 @@ var _movement_scale: float = 1.0
 @export var _base_speed := 10.0
 @export var _stop_speed := 10.0
 @export var _turn_speed := 3.14 # radians
+@export var _forward_cutoff := .3
 var _target_position: Vector3 = Vector3.ZERO
 
 var _aiming: bool = false
 var _turning: bool = false
 
 func start_aim(target_pos: Vector3) -> void:
-	#dot math to look
 	_aiming = true
 	_target_position = target_pos
 
@@ -28,7 +26,6 @@ func stop_aim() -> void:
 	_aiming = false
 
 func turn_towards_target(delta: float) -> void:
-	# turning
 	var target_dir = _target_position - _player.global_position
 	target_dir.y = 0 # flatten
 	
@@ -45,29 +42,40 @@ func turn_towards_target(delta: float) -> void:
 			var final_quat = current_quat.slerp(target_quat, weight)
 			_player.global_basis = Basis(final_quat)
 			
-			
 func _physics_process(delta: float) -> void:
 	var speed = _base_speed * _movement_scale
-	var input_dir = Vector2(
-		Input.get_axis("move_left", "move_right"), 
-		Input.get_axis("move_back", "move_forward"))
-
-	#turning
-	turn_towards_target(delta)
+	var input_dir = Input.get_vector("move_left", "move_right", "move_back", "move_forward")
 	
-	# movement
-	if input_dir:
+	if input_dir != Vector2.ZERO:
+		var forward_dir: Vector3 = -_cam_controller.player_basis.z * input_dir.y
+		var right_dir: Vector3 = _cam_controller.player_basis.x * input_dir.x
+		var move_dir = forward_dir + right_dir
+		
 		if _aiming:
-			pass
+			turn_towards_target(delta)
+			
+			var dot = -_player.basis.z.dot(move_dir.normalized())
+			var forward_vel = forward_dir * speed
+			var right_vel = right_dir * speed
+			
+			if dot < _forward_cutoff and dot > -_forward_cutoff:
+				right_vel *= _strafe_penalty
+			elif dot < -_forward_cutoff:
+				forward_vel *= _back_penalty
+				
+			_player.velocity = forward_vel + right_vel
 		else:
-			var forward_dir := Vector3(-_cam_controller.player_basis.z * input_dir.y).normalized()
-			var right_dir := Vector3(_cam_controller.player_basis.x * input_dir.x).normalized()
-			_target_position = _player.global_position + (forward_dir + right_dir)
+			_target_position = _player.global_position + move_dir
+			turn_towards_target(delta)
+			
 			if not _turning:
 				_player.velocity = -_player.basis.z * speed
 			else:
-				_player.velocity = _player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
+				_player.velocity = Vector3.ZERO
 	else:
+		if _aiming:
+			turn_towards_target(delta)
+		# Added * delta here to fix frame-rate independence
 		_player.velocity = _player.velocity.move_toward(Vector3.ZERO, _stop_speed * delta)
 	
 	_player.move_and_slide()
