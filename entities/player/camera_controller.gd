@@ -17,9 +17,12 @@ var player_basis := Basis()
 const RAY_LENGTH: float = 100.0
 
 var _target_size:= 7.0
+var _offset: Vector3
 
 func _ready() -> void:
 	_target_size = _camera.size
+	set_as_top_level(true)
+	_offset =  _camera.global_position - _controller.global_position
 
 func _snap_angle(current_yaw_radians: float, snap_angle_degrees: float) -> float:
 	var current_degrees = rad_to_deg(current_yaw_radians)
@@ -66,6 +69,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	# follow cam
+	global_position = _controller.global_position + _offset
 	# rotation
 	var current_rot: Quaternion = global_basis.get_rotation_quaternion()
 	var target_rot: Quaternion = Quaternion.from_euler(Vector3(0, _yaw, 0))
